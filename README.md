@@ -5,3 +5,6 @@ The vision and purpose of this
   this would mean that your data is private.
 
 This is in a very early state and is not a user-friendly setup process. So at this time, I am not providing any setup instructions, though if anyone wants to go through the effort of setting it up I would be happy to answer any questions.
+
+
+Also please note that the folders are empty, these are just place holders for things you will need to install yourself, I am hoping I will be able to write out proper instructions for that at some point.
