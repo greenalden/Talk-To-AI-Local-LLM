@@ -1,14 +1,13 @@
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, LlamaConfig, StoppingCriteria, StoppingCriteriaList
 from TTS.api import TTS
-from pydub import AudioSegment
-from pydub.playback import play
 import vosk
 import json
 import time
 import sys
 import sounddevice as sd
 import os
+import simpleaudio as sa
 current_dir = os.path.dirname(__file__)
 resetCacheLoops=0 # manages cache loops, do not touch
 wakeWordString="" # manages what string has the wake word held in it, do not touch this variable.
@@ -204,8 +203,9 @@ def main():
     while True:
         if listen_for_wake_word(device_index=mic_device_index):
             text_to_speech(generate_response(listen_and_transcribe(device_index=mic_device_index)).replace("*", ""), output_file="vits_output.wav", use_gpu=True, speaker_id="p230", speed=1.2)
-            audio = AudioSegment.from_wav("vits_output.wav")
-            play(audio)
+            wave_obj = sa.WaveObject.from_wave_file("vits_output.wav")
+            play_obj = wave_obj.play()
+            play_obj.wait_done()
 
 if __name__ == "__main__":
     main()
