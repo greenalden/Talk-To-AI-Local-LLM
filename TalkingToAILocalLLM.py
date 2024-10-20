@@ -32,14 +32,14 @@ def text_to_speech(text, output_file="output.wav", model_name="tts_models/en/vct
         print(f"Error: {e}")
 
 # Load the tokenizer
-tokenizer = AutoTokenizer.from_pretrained(current_dir + "\\meta-llama_Meta-Llama-3.1-8B-Instruct")
+tokenizer = AutoTokenizer.from_pretrained(current_dir + "\\Llama-3.1-8B-Instruct")
 if tokenizer.pad_token is None:
     tokenizer.pad_token = tokenizer.eos_token
 
 # Load the model
-config = LlamaConfig.from_pretrained(current_dir + "\\meta-llama_Meta-Llama-3.1-8B-Instruct")
+config = LlamaConfig.from_pretrained(current_dir + "\\Llama-3.1-8B-Instruct")
 model = AutoModelForCausalLM.from_pretrained(
-    current_dir + "\\meta-llama_Meta-Llama-3.1-8B-Instruct",
+    current_dir + "\\Llama-3.1-8B-Instruct",
     config=config,
     torch_dtype=torch.float32,
     load_in_4bit=True,
