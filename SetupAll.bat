@@ -83,6 +83,37 @@ if %errorlevel% equ 0 (
 ) else (
     echo Git installation failed.
 )
+
+
+echo Installing Git again to avoid errors...
+
+:: Set download URL for Git installer (update URL if necessary)
+set "GIT_URL=https://github.com/git-for-windows/git/releases/download/v2.42.0.windows.1/Git-2.42.0-64-bit.exe"
+
+:: Set the path to download the installer
+set "GIT_INSTALLER=%TEMP%\git_installer.exe"
+
+:: Download Git installer
+echo Downloading Git...
+bitsadmin /transfer "Git Download" %GIT_URL% %GIT_INSTALLER%
+
+:: Install Git silently (without user interaction)
+echo Installing Git...
+start /wait "" %GIT_INSTALLER% /VERYSILENT /NORESTART
+
+:: Clean up the installer after installation
+del /f /q %GIT_INSTALLER%
+
+:: Check if Git was installed successfully
+git --version
+if %errorlevel% equ 0 (
+    echo Git installed successfully!
+) else (
+    echo Git installation failed.
+)
+
+
+
 REM Download and install Vosk model
 echo Downloading Vosk model...
 curl -L -O https://alphacephei.com/vosk/models/vosk-model-en-us-0.22.zip
@@ -95,7 +126,8 @@ git clone https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct
 
 
 
-
+echo Before continuing make sure Visual Studio finished installing
+pause
 
 :: Define the directory for Anaconda/Miniconda installation
 set ANACONDA_DIR=%~dp0anaconda
@@ -172,4 +204,8 @@ pip install TTS==0.22.0 "transformers==4.45.1" "setuptools==75.1.0" "jieba==0.42
 :: End of script
 echo Done.
 echo If everything ran without problems go ahead and try the Run.bat file.
+echo If you found an error right at the end try running the SetupPython.bat, this sometimes will fix it.
+echo If you had problems installing the applications at the start run the Setup_Instructions_old.bat and try this file again.
+echo If all aplications installed but the AI models are missing try the SetupAIModels.bat, make sure to delete the old folders first if those started installing.
+echo For any other questions feel free to reach out on GitHub
 pause
