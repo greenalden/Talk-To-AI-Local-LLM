@@ -171,4 +171,5 @@ pip install TTS==0.22.0 "transformers==4.45.1" "setuptools==75.1.0" "jieba==0.42
 
 :: End of script
 echo Done.
+echo If everything ran without problems go ahead and try the Run.bat file.
 pause
