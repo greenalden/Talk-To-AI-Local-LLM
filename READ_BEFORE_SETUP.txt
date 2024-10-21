@@ -1,1 +1,2 @@
-Please note you will need to have Visual Studio (Not Visual Studio code) with the "Desktop development with c++" and ".NET desktop development" parts installed. you will also need to download espeak-ng from here "https://github.com/espeak-ng/espeak-ng". All of these things need to be installed before running the SetupAndRun.bat file.
+Everything you need should be installed with the SetupAll.bat. If you have any problems feel free to post it in GitHub and I will try to help.
+After you run the SetupAll.bat just run the Run.bat and you should be good.
