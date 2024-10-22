@@ -1,6 +1,6 @@
 @echo off
 echo Before running this script please make a hugging face account and request access to Llama-3.1-8B-Instruct from here https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct.
-echo When you have gotten an email saying you have access to the model come back here, you will need your account information.
+echo When you have gotten an email saying you have access to the model come back here, you will need a token from your account when asked later.
 pause
 
 echo Installing Visual Studio with specified workloads...
@@ -113,6 +113,10 @@ if %errorlevel% equ 0 (
 )
 
 
+python -m pip install huggingface_hub
+huggingface-cli login
+
+
 
 REM Download and install Vosk model
 echo Downloading Vosk model...
@@ -174,6 +178,15 @@ call conda install python=3.11.9 -y
 
 
 python -m pip install --upgrade pip
+
+
+pip install --upgrade huggingface_hub
+huggingface-cli login
+
+git lfs install
+git clone https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct
+
+
 
 
 

@@ -31,32 +31,6 @@ del /f /q %VS_INSTALLER%
 :: Visual Studio installation is assumed successful if installer runs correctly
 echo Visual Studio installation has been initiated. Verify through Visual Studio Installer.
 
-
-:: Set the download URL for the eSpeak NG installer (update URL if necessary)
-set "ESPEAK_URL=https://github.com/espeak-ng/espeak-ng/releases/download/1.51/espeak-ng-X64.msi"
-
-:: Set the path to download the installer
-set "ESPEAK_INSTALLER=%TEMP%\espeak-ng-X64.msi"
-
-:: Download eSpeak NG installer using bitsadmin
-echo Downloading eSpeak NG...
-bitsadmin /transfer "eSpeak Download" %ESPEAK_URL% %ESPEAK_INSTALLER%
-
-:: Install eSpeak NG silently (without user interaction)
-echo Installing eSpeak NG...
-msiexec /i %ESPEAK_INSTALLER% /quiet /norestart
-
-:: Clean up the installer after installation
-del /f /q %ESPEAK_INSTALLER%
-
-:: Check if eSpeak NG was installed successfully
-where espeak-ng
-if %errorlevel% equ 0 (
-    echo eSpeak NG installed successfully!
-) else (
-    echo eSpeak NG installation failed.
-)
-
 echo Installing Git...
 
 :: Set download URL for Git installer (update URL if necessary)
@@ -83,11 +57,99 @@ if %errorlevel% equ 0 (
 ) else (
     echo Git installation failed.
 )
+
+pip install --upgrade huggingface_hub
+huggingface-cli login
+
+
+
 REM Download and install Vosk model
 echo Downloading Vosk model...
 curl -L -O https://alphacephei.com/vosk/models/vosk-model-en-us-0.22.zip
 echo Unzipping Vosk model...
 tar -xvzf vosk-model-en-us-0.22.zip
 del vosk-model-en-us-0.22.zip
+
+
+
+:: Set the download URL for the eSpeak NG installer (update URL if necessary)
+set "ESPEAK_URL=https://github.com/espeak-ng/espeak-ng/releases/download/1.51/espeak-ng-X64.msi"
+
+:: Set the path to download the installer
+set "ESPEAK_INSTALLER=%TEMP%\espeak-ng-X64.msi"
+
+:: Download eSpeak NG installer using bitsadmin
+echo Downloading eSpeak NG...
+bitsadmin /transfer "eSpeak Download" %ESPEAK_URL% %ESPEAK_INSTALLER%
+
+:: Install eSpeak NG silently (without user interaction)
+echo Installing eSpeak NG...
+msiexec /i %ESPEAK_INSTALLER% /quiet /norestart
+
+:: Clean up the installer after installation
+del /f /q %ESPEAK_INSTALLER%
+
+:: Check if eSpeak NG was installed successfully
+where espeak-ng
+if %errorlevel% equ 0 (
+    echo eSpeak NG installed successfully!
+) else (
+    echo eSpeak NG installation failed.
+)
+
+
+
+:: Define the directory for Anaconda/Miniconda installation
+set ANACONDA_DIR=%~dp0anaconda
+
+:: Define the Miniconda installer URL and filename
+set MINICONDA_INSTALLER=miniconda_installer.exe
+set MINICONDA_URL=https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe
+
+:: Check if Anaconda is already installed
+if not exist "%ANACONDA_DIR%" (
+    echo Anaconda not found. Installing Miniconda...
+
+    :: Check if curl is available, else use PowerShell to download
+    curl --version >nul 2>&1
+    if errorlevel 1 (
+        echo curl not found. Using PowerShell to download Miniconda...
+        powershell -Command "Invoke-WebRequest -Uri %MINICONDA_URL% -OutFile %MINICONDA_INSTALLER%"
+    ) else (
+        curl -o "%MINICONDA_INSTALLER%" "%MINICONDA_URL%"
+    )
+
+    :: Install Miniconda
+    start /wait "" "%MINICONDA_INSTALLER%" /InstallationType=JustMe /RegisterPython=0 /S /D=%ANACONDA_DIR%
+    del "%MINICONDA_INSTALLER%"  :: Delete installer after installation
+) else (
+    echo Anaconda already installed.
+)
+
+:: Set the path to conda
+set "PATH=%ANACONDA_DIR%\Scripts;%ANACONDA_DIR%\condabin;%PATH%"
+
+:: Check if 'conda' is recognized
+where conda >nul 2>&1
+if errorlevel 1 (
+    echo Running 'conda init'...
+    call conda init
+    echo Please restart your Command Prompt and run this script again.
+    exit /b
+)
+
+:: Force install the specified Python version in the base environment
+echo Installing Python 3.11.9 in the base environment...
+call conda install python=3.11.9 -y
+
+
+python -m pip install --upgrade pip
+
+pip install --upgrade huggingface_hub
+huggingface-cli login
+
 git lfs install
 git clone https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct
+
+echo Done
+pause
