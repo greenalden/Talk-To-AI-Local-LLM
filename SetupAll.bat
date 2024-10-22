@@ -3,6 +3,7 @@ echo Before running this script please make a hugging face account and request a
 echo When you have gotten an email saying you have access to the model, create a token here https://huggingface.co/settings/tokens.
 echo create a new token, leaving it as Fine-grained, checking the box that says Read access to contents of all public gated repos you can access.
 echo after that you complete that save the token value, you will need it later.
+echo If it ever asks you to Add token as git credential? Y/n just hit enter.
 pause
 
 echo Installing Visual Studio with specified workloads...
@@ -88,6 +89,7 @@ if %errorlevel% equ 0 (
 
 
 echo Installing Git again to avoid errors...
+timeout /t 5
 
 :: Set download URL for Git installer (update URL if necessary)
 set "GIT_URL=https://github.com/git-for-windows/git/releases/download/v2.42.0.windows.1/Git-2.42.0-64-bit.exe"
@@ -126,8 +128,6 @@ curl -L -O https://alphacephei.com/vosk/models/vosk-model-en-us-0.22.zip
 echo Unzipping Vosk model...
 tar -xvzf vosk-model-en-us-0.22.zip
 del vosk-model-en-us-0.22.zip
-git lfs install
-git clone https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct
 
 
 
@@ -209,6 +209,8 @@ pip install simpleaudio==1.0.4
 pip install --upgrade pip setuptools wheel
 pip install build
 pip cache purge
+pip install TTS==0.22.0 "transformers==4.45.1" "setuptools==75.1.0" "jieba==0.42.1" "encodec==0.1.1" "gruut_lang_de==2.0.1" "gruut_lang_en==2.0.1" "gruut_lang_es==2.0.1" "gruut_lang_fr==2.0.2" "contourpy==1.3.0" "spacy==3.7.6"
+timeout /t 5
 pip install TTS==0.22.0 "transformers==4.45.1" "setuptools==75.1.0" "jieba==0.42.1" "encodec==0.1.1" "gruut_lang_de==2.0.1" "gruut_lang_en==2.0.1" "gruut_lang_es==2.0.1" "gruut_lang_fr==2.0.2" "contourpy==1.3.0" "spacy==3.7.6"
 
 

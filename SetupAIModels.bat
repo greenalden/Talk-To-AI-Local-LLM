@@ -3,6 +3,7 @@ echo Before running this script please make a hugging face account and request a
 echo When you have gotten an email saying you have access to the model, create a token here https://huggingface.co/settings/tokens.
 echo create a new token, leaving it as Fine-grained, checking the box that says Read access to contents of all public gated repos you can access.
 echo after that you complete that save the token value, you will need it later.
+echo If it ever asks you to Add token as git credential? Y/n just hit enter.
 pause
 
 echo Installing Visual Studio with specified workloads...
