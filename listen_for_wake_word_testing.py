@@ -123,7 +123,7 @@ def listen_for_wake_word2(device_index=None):
 
 #Find a way to call a second version of the trascription while it proccesses the other one to avoid downtime
 #There will need to be a way to avoid overlapping.
-#May need asycio to alternate tasks
+#May need asycio to alternate tasks later
 
 
 mic_device_index=1
