@@ -120,7 +120,7 @@ def listen_for_wake_word(device_index=None):
                 resetCacheLoops=0
             resetCacheLoops+=1
 
-    stream = sd.InputStream(samplerate=16000, blocksize=64000, device=device_index, 
+    stream = sd.InputStream(samplerate=16000, blocksize=32000, device=device_index, 
                             channels=1, callback=audio_callback, dtype='int16')
 
     print("Listening for the wake word...")
