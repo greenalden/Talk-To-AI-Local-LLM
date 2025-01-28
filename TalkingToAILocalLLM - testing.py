@@ -33,15 +33,15 @@ def text_to_speech(text, output_file="output.wav", model_name="tts_models/en/vct
         print(f"Error: {e}")
 
 # Load the tokenizer
-tokenizer = AutoTokenizer.from_pretrained(current_dir + "\\Llama-3.1-8B-Instruct")
+tokenizer = AutoTokenizer.from_pretrained(current_dir + "\\DeepSeek-R1-Distill-Qwen-1.5B")
 if tokenizer.pad_token is None:
     tokenizer.pad_token = tokenizer.eos_token
 
 # Load the model
-config = LlamaConfig.from_pretrained(current_dir + "\\Llama-3.1-8B-Instruct")
+#config = LlamaConfig.from_pretrained(current_dir + "\\Llama-3.1-8B-Instruct")
 model = AutoModelForCausalLM.from_pretrained(
-    current_dir + "\\Llama-3.1-8B-Instruct",
-    config=config,
+    current_dir + "\\DeepSeek-R1-Distill-Qwen-1.5B",
+    #config=config,
     torch_dtype=torch.float32,
     load_in_4bit=True,
     device_map="auto"
@@ -131,9 +131,10 @@ def listen_for_wake_word(device_index=None):
         while not wake_word_detected:
             pass
         
-    wave_obj = sa.WaveObject.from_wave_file(str(random.randint(1, 4))+".wav")
-    play_obj = wave_obj.play()
-    play_obj.wait_done()
+    audioPlay_wake=(current_dir + "\\wake_responses\\" + str(random.randint(1, 4))+".wav")
+    wave_obj_wake = sa.WaveObject.from_wave_file(audioPlay_wake)
+    play_obj_wake = wave_obj_wake.play()
+    play_obj_wake.wait_done()
     return wake_word_detected  # Return if the wake word was detected
 
 
