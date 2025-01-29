@@ -254,6 +254,7 @@ def listen_and_transcribe(device_index=None, extension_timeout=3):
         print("No transcription available or timeout.")
         #return None
         print("NO WORDS FOUND")
+        return(listen_and_transcribe(device_index=1))
         #TRY TO CALL ITSELF
     
     print("Final transcription result: "+ (str(wakeWordString)[10:])[:-2] + ". " + (transcribed_text.strip()))
@@ -262,7 +263,8 @@ def listen_and_transcribe(device_index=None, extension_timeout=3):
 
 
     
-    return ((str(wakeWordString)[10:])[:-2] + ". " + transcribed_text.strip())
+    #return ((str(wakeWordString)[10:])[:-2] + ". " + transcribed_text.strip())
+    return (transcribed_text.strip())
 
 
 
