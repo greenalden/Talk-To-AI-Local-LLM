@@ -250,9 +250,11 @@ def listen_and_transcribe(device_index=None, extension_timeout=3):
 
 #    print("transcribed_text:" + transcribed_text)
 #   (transcribed_text=="the")
-    if not transcribed_text:
+    if (not transcribed_text) or (transcribed_text=="the"):
         print("No transcription available or timeout.")
-        return None
+        #return None
+        print("NO WORDS FOUND")
+        #TRY TO CALL ITSELF
     
     print("Final transcription result: "+ (str(wakeWordString)[10:])[:-2] + ". " + (transcribed_text.strip()))
     print()
