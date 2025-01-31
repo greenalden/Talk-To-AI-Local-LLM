@@ -33,14 +33,14 @@ def text_to_speech(text, output_file="output.wav", model_name="tts_models/en/vct
         print(f"Error: {e}")
 
 # Load the tokenizer
-tokenizer = AutoTokenizer.from_pretrained(current_dir + "\\google_gemma-2-2b-it")
+tokenizer = AutoTokenizer.from_pretrained(current_dir + "\\gemma-2-2b-it")
 if tokenizer.pad_token is None:
     tokenizer.pad_token = tokenizer.eos_token
 
 # Load the model
 #config = LlamaConfig.from_pretrained(current_dir + "\\Llama-3.1-8B-Instruct")
 model = AutoModelForCausalLM.from_pretrained(
-    current_dir + "\\google_gemma-2-2b-it",
+    current_dir + "\\gemma-2-2b-it",
     #config=config,
     torch_dtype=torch.float32,
     load_in_4bit=True,
@@ -139,6 +139,63 @@ def listen_for_wake_word(device_index=None):
 
 
 
+
+import queue
+import threading
+
+def listen_for_wake_word2(device_index=None):
+    recognizer = vosk.KaldiRecognizer(modelVosk, 16000)
+    audio_queue = queue.Queue()
+    wake_word_detected = threading.Event()  # Flag to signal detection
+
+    def audio_callback(indata, frames, time, status):
+        if status:
+            print(f"Audio input error: {status}", file=sys.stderr)
+        audio_queue.put(bytes(indata))  # Push audio to queue
+
+    def process_audio():
+        while not wake_word_detected.is_set():
+            audio_data = audio_queue.get()
+            if recognizer.AcceptWaveform(audio_data):
+                result = json.loads(recognizer.Result())
+                print(f"Recognition result: {result}")  # Debugging output
+                if "text" in result and WAKE_WORD in result["text"].lower():
+                    print(f"Wake word detected: {result['text']}")
+                    wake_word_detected.set()  # Stop listening
+            else:
+                partial_result = json.loads(recognizer.PartialResult())
+                if "partial" in partial_result and WAKE_WORD in partial_result["partial"].lower():
+                    print(f"Wake word detected (partial): {partial_result['partial']}")
+                    wake_word_detected.set()  # Stop immediately
+
+    stream = sd.InputStream(
+        samplerate=16000, blocksize=4000,  # Smaller chunks = lower latency
+        device=device_index, channels=1, callback=audio_callback, dtype="int16"
+    )
+
+    print("Listening for wake word...")
+
+    with stream:
+        threading.Thread(target=process_audio, daemon=True).start()
+        while not wake_word_detected.is_set():
+            time.sleep(0.01)  # Prevent high CPU usage
+
+
+
+
+    audioPlay_wake=(current_dir + "\\wake_responses\\" + str(random.randint(1, 4))+".wav")
+    wave_obj_wake = sa.WaveObject.from_wave_file(audioPlay_wake)
+    play_obj_wake = wave_obj_wake.play()
+    play_obj_wake.wait_done()
+
+
+    return True  # Wake word detected
+
+
+
+
+
+
 def listen_and_transcribe(device_index=None, extension_timeout=3):
     global wakeWordString
     recognizer = vosk.KaldiRecognizer(modelVosk, 16000)
@@ -190,12 +247,19 @@ def listen_and_transcribe(device_index=None, extension_timeout=3):
                 print("No new input detected. Stopping recording.")
                 break
 
+
+#    print("transcribed_text:" + transcribed_text)
+#   (transcribed_text=="the")
     if not transcribed_text:
         print("No transcription available or timeout.")
-        #return None
+        return None
     
     print("Final transcription result: "+ (str(wakeWordString)[10:])[:-2] + ". " + (transcribed_text.strip()))
     print()
+
+
+
+    
     return ((str(wakeWordString)[10:])[:-2] + ". " + transcribed_text.strip())
 
 
@@ -206,7 +270,7 @@ def listen_and_transcribe(device_index=None, extension_timeout=3):
 def main():
     mic_device_index = 1  # Replace with your desired mic index
     while True:
-        if listen_for_wake_word(device_index=mic_device_index):
+        if listen_for_wake_word2(device_index=mic_device_index):
             text_to_speech(generate_response(listen_and_transcribe(device_index=mic_device_index)).replace("*", ""), output_file="vits_output.wav", use_gpu=True, speaker_id="p230", speed=1.2)
             wave_obj = sa.WaveObject.from_wave_file("vits_output.wav")
             play_obj = wave_obj.play()
