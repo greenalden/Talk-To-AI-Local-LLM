@@ -138,4 +138,5 @@ git clone https://huggingface.co/google/gemma-2-2b-it
 :: End of script
 echo Done.
 echo Please restart your computer before using Run.bat
+echo You will need an internet connection for the first time using Run.bat
 pause
