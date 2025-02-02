@@ -93,57 +93,12 @@ def generate_response(prompt):
     conversation_history.append({"role": "assistant", "content": response})
     return response
 
-def listen_for_wake_word(device_index=None):
-    recognizer = vosk.KaldiRecognizer(modelVosk, 16000)
-    
-    wake_word_detected = False  # Flag to indicate if wake word was detected
-
-    def audio_callback(indata, frames, time, status):
-        global wakeWordString
-        global resetCacheLoops
-        global numberOfCacheLoops
-        nonlocal wake_word_detected  # Reference the flag in the outer scope
-        if status:
-            print(f"Audio input error: {status}", file=sys.stderr)
-        if recognizer.AcceptWaveform(indata.tobytes()):
-            result = json.loads(recognizer.Result())
-            wakeWordString = result
-            #print(wakeWordString)
-            print(f"Recognition result: {wakeWordString}")  # Debugging Vosk's processing
-            if 'text' in result and WAKE_WORD in result['text'].lower():
-                print(f"Wake word detected: {result['text']}")
-                wake_word_detected = True
-                return  # Stop processing further once detected
-            if resetCacheLoops>=numberOfCacheLoops:
-                print("Cache Reset")
-                recognizer.Reset()
-                resetCacheLoops=0
-            resetCacheLoops+=1
-
-    stream = sd.InputStream(samplerate=16000, blocksize=32000, device=device_index, 
-                            channels=1, callback=audio_callback, dtype='int16')
-
-    print("Listening for the wake word...")
-
-    start_time = time.time()
-    
-    with stream:
-        while not wake_word_detected:
-            pass
-        
-    audioPlay_wake=(current_dir + "\\wake_responses\\" + str(random.randint(1, 4))+".wav")
-    wave_obj_wake = sa.WaveObject.from_wave_file(audioPlay_wake)
-    play_obj_wake = wave_obj_wake.play()
-    play_obj_wake.wait_done()
-    return wake_word_detected  # Return if the wake word was detected
-
-
 
 
 import queue
 import threading
 
-def listen_for_wake_word2(device_index=None):
+def listen_for_wake_word(device_index=None):
     recognizer = vosk.KaldiRecognizer(modelVosk, 16000)
     audio_queue = queue.Queue()
     wake_word_detected = threading.Event()  # Flag to signal detection
@@ -254,6 +209,10 @@ def listen_and_transcribe(device_index=None, extension_timeout=3):
         print("No transcription available or timeout.")
         #return None
         print("NO WORDS FOUND")
+        audioPlay_wake=(current_dir + "\\wake_responses\\" + "CouldNotUnderstand.wav")
+        wave_obj_wake = sa.WaveObject.from_wave_file(audioPlay_wake)
+        play_obj_wake = wave_obj_wake.play()
+        play_obj_wake.wait_done()
         return(listen_and_transcribe(device_index=1))
         #TRY TO CALL ITSELF
     
@@ -274,7 +233,7 @@ def listen_and_transcribe(device_index=None, extension_timeout=3):
 def main():
     mic_device_index = 1  # Replace with your desired mic index
     while True:
-        if listen_for_wake_word2(device_index=mic_device_index):
+        if listen_for_wake_word(device_index=mic_device_index):
             text_to_speech(generate_response(listen_and_transcribe(device_index=mic_device_index)).replace("*", ""), output_file="vits_output.wav", use_gpu=True, speaker_id="p230", speed=1.2)
             wave_obj = sa.WaveObject.from_wave_file("vits_output.wav")
             play_obj = wave_obj.play()
