@@ -59,7 +59,7 @@ del vosk-model-en-us-0.22.zip
 echo Before continuing make sure Visual Studio finished installing
 pause
 
-
+echo Installing python
 
 :: Define the directory for Anaconda/Miniconda installation
 set ANACONDA_DIR=%~dp0anaconda
