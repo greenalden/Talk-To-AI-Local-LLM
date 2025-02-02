@@ -1,4 +1,66 @@
 @echo off
+
+echo Installing Visual Studio with specified workloads...
+
+:: Set download URL for the Visual Studio Installer (Community edition)
+set "VS_URL=https://aka.ms/vs/17/release/vs_community.exe"
+
+:: Set the path to download the installer
+set "VS_INSTALLER=%TEMP%\vs_installer.exe"
+
+:: Download the Visual Studio installer using bitsadmin
+echo Downloading Visual Studio Installer...
+bitsadmin /transfer "VS Download" %VS_URL% %VS_INSTALLER%
+
+:: Install Visual Studio with the desired workloads silently
+echo Installing Visual Studio with .NET Desktop, Python, and C++ Desktop workloads...
+start /wait "" %VS_INSTALLER% ^
+    --add Microsoft.VisualStudio.Workload.ManagedDesktop ^
+    --add Microsoft.VisualStudio.Workload.Python ^
+    --add Microsoft.VisualStudio.Workload.NativeDesktop ^
+    --includeRecommended ^
+    --passive ^
+    --norestart
+
+:: Clean up the installer after installation
+del /f /q %VS_INSTALLER%
+
+:: Visual Studio installation is assumed successful if installer runs correctly
+echo Visual Studio installation has been initiated. Verify through Visual Studio Installer.
+
+REM Define download URL and installer filename
+set "DOWNLOAD_URL=https://github.com/espeak-ng/espeak-ng/releases/download/1.51/espeak-ng-X64.msi"
+set "INSTALLER=espeak-ng-X64.msi"
+
+REM Download the installer using PowerShell (silent)
+echo Downloading eSpeak-NG...
+powershell -Command "Invoke-WebRequest -Uri %DOWNLOAD_URL% -OutFile %INSTALLER%"
+
+REM Install eSpeak-NG (default installation location)
+echo Installing eSpeak-NG...
+msiexec /i %INSTALLER% /norestart
+
+REM Clean up by deleting the installer
+echo Cleaning up...
+del %INSTALLER%
+
+
+
+REM Download and install Vosk model
+echo Downloading Vosk model...
+curl -L -O https://alphacephei.com/vosk/models/vosk-model-en-us-0.22.zip
+echo Unzipping Vosk model...
+tar -xvzf vosk-model-en-us-0.22.zip
+del vosk-model-en-us-0.22.zip
+
+
+
+
+echo Before continuing make sure Visual Studio finished installing
+pause
+
+
+
 :: Define the directory for Anaconda/Miniconda installation
 set ANACONDA_DIR=%~dp0anaconda
 
@@ -75,4 +137,5 @@ git clone https://huggingface.co/google/gemma-2-2b-it
 
 :: End of script
 echo Done.
+echo Please restart your computer before using Run.bat
 pause
