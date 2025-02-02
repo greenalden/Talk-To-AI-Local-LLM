@@ -1,2 +1,2 @@
-Everything you need should be installed with the SetupAll.bat. If you have any problems feel free to post it in GitHub and I will try to help.
-After you run the SetupAll.bat just run the Run.bat and you should be good.
+Everything you need should be installed with the "SetupEverything - beta.bat". If you have any problems feel free to post it in GitHub and I will try to help.
+After you run the "SetupEverything - beta.bat" and restart your computer, just run the "Run.bat" and you should be good.
