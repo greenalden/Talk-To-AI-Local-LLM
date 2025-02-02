@@ -54,11 +54,10 @@ class StopOnTokens(StoppingCriteria):
         self.stop_token_ids = stop_token_ids
 
     def __call__(self, input_ids, scores, **kwargs):
-        for stop_ids in self.stop_token_ids:
-            if torch.all(input_ids[0][-len(stop_ids):] == torch.tensor(stop_ids, device=input_ids.device)):
+        for stop_id in self.stop_token_ids:
+            if input_ids[0][-1] == stop_id:
                 return True
         return False
-
 
 def generate_response(prompt):
     global conversation_history
@@ -72,11 +71,7 @@ def generate_response(prompt):
     full_prompt += "Assistant:"
     inputs = tokenizer(full_prompt, return_tensors="pt", padding=True, truncation=True, max_length=512)
     inputs = {k: v.to(model.device) for k, v in inputs.items()}
-    stop_token_ids = [
-    tokenizer.encode("Human:", add_special_tokens=False),
-    tokenizer.encode("Assistant:", add_special_tokens=False)
-    ]
-
+    stop_token_ids = [tokenizer.encode("\nHuman:", add_special_tokens=False)[-1]]
     stopping_criteria = StoppingCriteriaList([StopOnTokens(stop_token_ids)])
     with torch.no_grad():
         outputs = model.generate(
@@ -92,11 +87,9 @@ def generate_response(prompt):
             stopping_criteria=stopping_criteria,
         )
     response = tokenizer.decode(outputs[0, inputs['input_ids'].shape[-1]:], skip_special_tokens=True)
-    #response = response.strip()
+    response = response.strip()
     if response.endswith("Human:"):
         response = response.removesuffix("Human:")
-    if response.endswith("Assistant:"):
-        response = response.removesuffix("Assistant:")
     conversation_history.append({"role": "assistant", "content": response})
     return response
 
